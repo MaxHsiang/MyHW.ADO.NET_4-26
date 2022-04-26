@@ -27,6 +27,17 @@ namespace MyHomeWork
                 comboBox1.Items.Add(dataReader["CategoryName"]);
                 //$ = string.Format
             }
+            using (conn = new SqlConnection("Data Source=.;Initial Catalog=Northwind;Integrated Security=True"))
+            {
+                conn.Open();
+                SqlDataAdapter adapter = new SqlDataAdapter("select CategoryName from Categories", conn);
+                DataSet ds = new DataSet();
+                adapter.Fill(ds);
+                for (int i = 0; i <= ds.Tables[0].Rows.Count - 1; i++)
+                {
+                    this.comboBox2.Items.Add(ds.Tables[0].Rows[i]["CategoryName"]);
+                }
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -53,6 +64,23 @@ namespace MyHomeWork
                 {
                     conn.Close();
                 }
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlConnection conn = null;
+
+            //Disconnected - DataAdapter
+            using (conn = new SqlConnection("Data Source=.;Initial Catalog=Northwind;Integrated Security=True"))
+            {
+                conn.Open();
+                string cmdText = $"select ProductName from Products as p join Categories as c on p.CategoryID=c.CategoryID where CategoryName='{comboBox2.Text}'";
+                SqlDataAdapter adapter = new SqlDataAdapter(cmdText, conn);
+                DataSet ds = new DataSet();
+                adapter.Fill(ds);
+
+                listBox2.DataSource = ds.Tables[0];
             }
         }
     }
